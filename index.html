@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fichas de Seguridad · Obra</title>
+<meta name="description" content="Buscador rápido de fichas de seguridad de productos químicos de la obra ISFV Ayora 1">
+<meta name="theme-color" content="#c62828">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fichas FDS">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">⚠</span>
+    <div><h1>Fichas de Seguridad</h1><p>ISFV Ayora 1 · productos químicos</p></div>
+  </div>
+  <button id="btnSos" class="sos" type="button">🚨 EMERGENCIA</button>
+</header>
+
+<main id="vista"></main>
+
+<div id="sosPanel" class="sheet" hidden role="dialog" aria-label="Teléfonos de emergencia">
+  <div class="sheet-body">
+    <div class="sheet-head"><h2>🚨 Teléfonos de emergencia</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <a class="call big" href="tel:112">📞 Llamar al 112 <small>Emergencias</small></a>
+    <a class="call big" href="tel:915620420">☎ 91 562 04 20 <small>Instituto Nacional de Toxicología · 24 h</small></a>
+    <div id="sosObra"></div>
+    <details class="edit"><summary>Añadir teléfonos de la obra</summary>
+      <p class="hint">Se guardan solo en este móvil (mutua, hospital, coordinador de emergencias…).</p>
+      <form id="formTel"><input name="n" placeholder="Nombre (ej. Mutua, Hospital Requena)" required><input name="t" type="tel" placeholder="Teléfono" required><button>Añadir</button></form>
+    </details>
+    <ol class="pasos">
+      <li><b>Protégete</b> y aparta a las personas de la zona.</li>
+      <li>Si es seguro, <b>corta la fuente</b> (cierra el envase, apaga focos de ignición).</li>
+      <li><b>Llama</b> y ten a mano el nombre del producto.</li>
+      <li>Aplica los <b>primeros auxilios</b> de la ficha del producto.</li>
+    </ol>
+  </div>
+</div>
+
+<footer class="foot">
+  <p>Resumen elaborado a partir de las FDS de la obra. <b>Ante cualquier duda, manda la ficha original (PDF) y llama a Toxicología.</b> No sustituye al criterio médico ni al plan de emergencia de la obra.</p>
+  <p id="estado"></p>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
