@@ -1,23 +1,31 @@
-# Fichas de Seguridad · Obra ISFV Ayora 1
+# Fichas de Seguridad · Obra
 
-App web instalable (PWA) para Android e iOS. Busca fichas de seguridad de los productos químicos de la obra y muestra al instante teléfonos, primeros auxilios, incendio y derrame. Funciona sin cobertura.
+App web instalable (PWA, Android e iOS) para buscar al instante las fichas de seguridad (FDS) de los productos químicos de la obra y ver a quién llamar y qué hacer en caso de accidente. Funciona **sin cobertura**.
 
-## Publicar en GitHub (una sola vez)
-1. Crea un repositorio nuevo en github.com (por ejemplo `fichas-obra`).
-2. Sube TODO el contenido de esta carpeta a la raíz del repositorio (index.html, app.js, data.js, sw.js, pdfs/, icons/…).
-3. Settings → Pages → Source: "Deploy from a branch" → Branch: main / (root) → Save.
-4. En 1-2 minutos tendrás la dirección: https://TU-USUARIO.github.io/fichas-obra/
+- **Buscador**: por nombre (2-3 letras), viscosidad (`15w40`, `68`), nº ONU, CAS, fabricante, tipo o peligro (`H304`, `inflamable`).
+- **Ficha de emergencia**: teléfonos, primeros auxilios, incendio, derrame, indicaciones de peligro y PDF original.
+- **Configuración inicial**: proyecto y responsable de emergencias (técnico de prevención al mando) con su teléfono. Se guarda solo en el móvil.
+- **Actualizar**: Ajustes → “Buscar actualización”. La versión se ve arriba a la derecha.
+- **Integridad**: Ajustes → “Verificar integridad de las fichas” (SHA-256).
+
+## Publicar (GitHub Pages)
+Settings → Pages → Source: *Deploy from a branch* → `main` / `(root)`.
+Dirección: `https://<organización>.github.io/<repositorio>/`
 
 ## Instalar en el móvil
-- Android (Chrome): abrir la dirección → menú ⋮ → "Instalar aplicación".
-- iPhone (Safari): abrir la dirección → Compartir → "Añadir a pantalla de inicio".
-Abrir una vez con cobertura: se descargan la app y los PDF y ya funciona sin conexión.
+- Android (Chrome): menú ⋮ → “Instalar aplicación”.
+- iPhone (Safari): Compartir → “Añadir a pantalla de inicio”.
+Abrir una vez con cobertura para que se descarguen las fichas.
 
 ## Añadir o cambiar una ficha
-1. Copia el PDF a `pdfs/`.
-2. Añade el producto en `data.js` (copia uno existente).
-3. Añade el PDF a la lista de `sw.js` y sube `VERSION` (p. ej. `fichas-v2`).
-4. Sube los cambios a GitHub.
+1. Copia el PDF a `pdfs/` (nombre en minúsculas, sin espacios, `.pdf`).
+2. Añade o edita el producto en `data.js`.
+3. Sube `APP_VERSION` en `app.js` (p. ej. `1.1.1`).
+4. Ejecuta `python3 tools/build.py` (regenera `sw.js` e `integrity.json`).
+5. Sube los cambios a GitHub. Los móviles verán el aviso “Hay una versión nueva”.
+
+## Seguridad
+Ver [SECURITY.md](SECURITY.md).
 
 ## Aviso
-Resúmenes basados en las FDS de la obra. Ante cualquier duda, la ficha original manda. Varias fichas son antiguas (aviso en cada producto).
+Los resúmenes proceden de las FDS de la obra. Ante cualquier duda manda la ficha original y llama al Instituto Nacional de Toxicología (91 562 04 20) o al 112. Varias fichas son antiguas (aviso en cada producto).
