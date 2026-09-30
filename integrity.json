@@ -1,7 +1,7 @@
 {
  "algoritmo": "SHA-256",
  "files": {
-  "app.js": "c763d2d9d426e8a736e2f84cdc72ae4873cf9d48fc85ab778322e149a77574ef",
+  "app.js": "fa537280fa230d7436ff9c21eb7c0af6bb9793fdf28a0a7d5b61ea8584b0aced",
   "data.js": "852f1f9dc19a3996aff10058ac69aa7c3dfc2a47e0a30ac8ff5c7956a1c4e85a",
   "icons/apple-touch-icon.png": "92ff6cd91fa59a27c6d06754456f10ae8dc809ee4268c519b07230a46669af85",
   "icons/icon-192.png": "40d9ef245f402d136d75879fab9b5a1b19a80d771a17b26ffefc0fb3f46691eb",
@@ -36,5 +36,5 @@
   "pdfs/transmission-gear-8-fe-75w80-tds.pdf": "bb3ef9e5b48065f3d788826b7f6df8730f4025233ac9ed38c939cd4a92168c28",
   "styles.css": "a2155043a422d4d1a112f7c248b9f36064a8ae260c6ff821000cef5f09754735"
  },
- "version": "1.1.0"
+ "version": "1.2.0"
 }
