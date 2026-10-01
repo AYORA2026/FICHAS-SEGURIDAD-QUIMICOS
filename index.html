@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Fichas de Seguridad · Obra</title>
 <meta name="description" content="Buscador rápido de fichas de seguridad de productos químicos de la obra">
-<meta name="theme-color" content="#0f1f3d">
+<meta name="theme-color" content="#e9edf3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1019" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
@@ -23,16 +24,12 @@
 
 <header class="top">
   <div class="top-in">
-    <div class="brand">
-      <span class="logo" id="logo" aria-hidden="true"></span>
-      <div class="brand-t">
-        <span class="eyebrow" id="hProyecto">Fichas de seguridad</span>
-        <strong id="hTitulo">Productos químicos</strong>
-      </div>
+    <div class="brand-t">
+      <span class="eyebrow" id="hProyecto">Fichas de seguridad</span>
+      <strong id="hTitulo">Productos químicos</strong>
     </div>
-    <span class="ver" id="hVer" aria-label="Versión de la aplicación"></span>
+    <a class="gear" id="hAjustes" href="#/ajustes" aria-label="Ajustes"></a>
   </div>
-  <div class="stripe" aria-hidden="true"></div>
 </header>
 
 <div id="banner" class="banner" hidden role="status"></div>

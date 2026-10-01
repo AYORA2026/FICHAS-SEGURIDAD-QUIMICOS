@@ -6,7 +6,7 @@ import hashlib, json, os, re, sys
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(root)
 ver = re.search(r'const APP_VERSION = "([^"]+)"', open("app.js", encoding="utf8").read()).group(1)
-core = ["index.html", "styles.css", "app.js", "data.js", "manifest.webmanifest",
+core = ["index.html", "styles.css", "fonts/lexend-latin.woff2", "app.js", "data.js", "manifest.webmanifest",
         "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png"]
 pdfs = sorted("pdfs/" + f for f in os.listdir("pdfs") if f.lower().endswith(".pdf"))
 for f in core + pdfs:

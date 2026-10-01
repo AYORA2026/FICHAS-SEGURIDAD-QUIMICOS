@@ -1,10 +1,11 @@
 // GENERADO por tools/build.py — no editar a mano.
 // Guarda la app y todas las fichas para funcionar SIN cobertura.
-const VERSION = "fichas-v1.2.0";
+const VERSION = "fichas-v1.3.0";
 const PRECACHE = [
  "./",
  "index.html",
  "styles.css",
+ "fonts/lexend-latin.woff2",
  "app.js",
  "data.js",
  "manifest.webmanifest",
