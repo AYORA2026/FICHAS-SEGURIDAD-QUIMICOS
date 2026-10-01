@@ -6,7 +6,7 @@
    recursos externos. Los datos de configuración solo se guardan
    en este dispositivo (localStorage).
    ============================================================ */
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.0";
 const APP_FECHA = "2026-09-30";
 
 /* ---------- anti-clickjacking (GitHub Pages no permite cabeceras) ---------- */
@@ -52,6 +52,7 @@ const IC = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
   trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
+  share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
   download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
   siren: '<path d="M7 18v-6a5 5 0 0 1 10 0v6M5 21h14M12 2v2M4.2 5.2l1.4 1.4M19.8 5.2l-1.4 1.4"/>',
 };
@@ -155,6 +156,25 @@ function pintarCabecera() {
   $("#hProyecto").textContent = CFG ? "Proyecto" : "Fichas de seguridad";
   $("#hTitulo").textContent = CFG ? CFG.proyecto : "Productos químicos";
   $("#hVer").textContent = "v" + APP_VERSION;
+}
+
+/* ---------- compartir la app (WhatsApp) ---------- */
+const APP_URL = "https://ayora2026.github.io/FICHAS-SEGURIDAD-QUIMICOS/";
+function textoCompartir() {
+  const obra = CFG ? ` · ${CFG.proyecto}` : "";
+  return `🧪 Fichas de Seguridad${obra}\nBuscador rápido de fichas de seguridad de productos químicos, con teléfonos y pasos a seguir en caso de accidente. Funciona sin conexión.\n\nÁbrela e instálala en tu móvil:\n${APP_URL}`;
+}
+function compartirWhatsApp() {
+  const t = textoCompartir();
+  // Enlace oficial de WhatsApp: abre la app (o WhatsApp Web) con el mensaje ya escrito; tú eliges el contacto o grupo.
+  const a = document.createElement("a");
+  a.href = "https://wa.me/?text=" + encodeURIComponent(t); a.target = "_blank"; a.rel = "noopener noreferrer";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function compartirOtros() {
+  const t = textoCompartir();
+  if (navigator.share) { try { await navigator.share({ title: "Fichas de Seguridad · Obra", text: t }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(t); toast("Mensaje copiado. Pégalo donde quieras ✔"); } catch { toast("No se pudo copiar. Usa el botón de WhatsApp."); }
 }
 
 function llamar(t, extra = "") {
@@ -379,7 +399,16 @@ function vistaAjustes() {
   vista.innerHTML = `
     <h2 class="h2">${ico("sliders")}Ajustes</h2>
 
-    <section class="bl"><h3>${ico("pin")}<span>PROYECTO Y RESPONSABLE</span></h3>${formConfig(false)}</section>
+    <section class="bl"><h3>${ico("pin")}<span>PROYECTO Y RESPONSABLE</span></h3>
+      <p class="hint">El nombre del proyecto aparece en la cabecera de la app y en el mensaje al compartirla.</p>${formConfig(false)}</section>
+
+    <section class="bl"><h3>${ico("share")}<span>COMPARTIR LA APP</span></h3>
+      <p class="hint">Envía el enlace a un compañero por WhatsApp. Solo se envía el enlace y un texto de presentación (con el nombre del proyecto); no se comparte tu nombre ni tu teléfono.</p>
+      <div class="acciones">
+        <button class="btn primary" id="btnWA" type="button">${ico("share")}Compartir por WhatsApp</button>
+        <button class="btn ghost" id="btnShare" type="button">${ico("share")}Otras opciones / copiar mensaje</button>
+      </div>
+    </section>
 
     <section class="bl"><h3>${ico("phone")}<span>OTROS TELÉFONOS DE LA OBRA</span></h3>
       <p class="hint">Mutua, hospital, coordinador… Aparecen en la pantalla de Emergencia.</p>
@@ -393,6 +422,7 @@ function vistaAjustes() {
 
     <section class="bl"><h3>${ico("refresh")}<span>APLICACIÓN</span></h3>
       <table class="datos">
+        <tr><th>Proyecto</th><td>${esc(CFG ? CFG.proyecto : "Sin configurar")}</td></tr>
         <tr><th>Versión</th><td>v${esc(APP_VERSION)} <small>(${fechaTxt(APP_FECHA)})</small></td></tr>
         <tr><th>Fichas</th><td>${PRODUCTOS.length} productos · 25 PDF</td></tr>
         <tr><th>Estado</th><td id="estadoRed">${navigator.onLine ? "En línea" : "Sin conexión (funciona igual)"}</td></tr>
@@ -428,6 +458,8 @@ function vistaAjustes() {
     l.push({ n, t }); LS.set(TEL_KEY, l); vistaAjustes(); toast("Teléfono añadido ✔");
   });
   vista.querySelectorAll("[data-del]").forEach((b) => (b.onclick = () => { const l = cargarTels(); l.splice(+b.dataset.del, 1); LS.set(TEL_KEY, l); vistaAjustes(); }));
+  $("#btnWA").onclick = compartirWhatsApp;
+  $("#btnShare").onclick = compartirOtros;
   $("#btnAct").onclick = buscarActualizacion;
   $("#btnInt").onclick = verificarIntegridad;
   $("#btnForzar").onclick = forzarRecarga;
