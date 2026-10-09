@@ -42,6 +42,12 @@ Sin hallazgos críticos abiertos. Lo que se encontró se corrigió; lo que no se
 - Consola del navegador sin errores ni avisos de CSP.
 
 ## Cambios de la v1.3.0 (rediseño «Mosaico»)
-- Tipografía Lexend (licencia SIL OFL) incluida en `fonts/`: ningún recurso externo, se verifica con el resto de archivos.
+- Tipografía Roboto (licencia SIL OFL) incluida en `fonts/`: ningún recurso externo, se verifica con el resto de archivos.
 - Nueva clave local `fds.v1.rec` (últimos 5 productos consultados, solo ids válidos). Se borra con «Borrar mis datos de este móvil».
 - Botón de compartir por WhatsApp (v1.2.0): solo envía el enlace de la app y el nombre del proyecto; no incluye nombre ni teléfono del responsable.
+
+## v1.4.0 · pictogramas e iconos
+- `pics.js` contiene, dentro de la app, los pictogramas oficiales de peligro GHS01–09 (paquete `@ghs-hazard-pictograms/assets`, MIT; dibujos de Wikimedia Commons) y iconos de color **Noto Emoji de Google** (Apache 2.0). Sin cargar nada de internet; se verifica con el resto de archivos.
+- Los pictogramas de cada producto se deducen de sus indicaciones H (tabla CLP en `ghsDe()` de `app.js`); no se escriben a mano.
+- Se regenera con `node tools/gen-pics.mjs` (requiere los paquetes npm citados). No hay estilos en línea: la CSP sigue siendo estricta.
+- Animaciones solo con CSS; se desactivan con «reducir animaciones».
