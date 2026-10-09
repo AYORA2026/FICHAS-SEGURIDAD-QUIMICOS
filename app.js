@@ -6,8 +6,8 @@
    recursos externos. Los datos de configuración solo se guardan
    en este dispositivo (localStorage).
    ============================================================ */
-const APP_VERSION = "1.3.0";
-const APP_FECHA = "2026-10-01";
+const APP_VERSION = "1.4.0";
+const APP_FECHA = "2026-10-09";
 
 /* ---------- anti-clickjacking (GitHub Pages no permite cabeceras) ---------- */
 (function () {
@@ -62,6 +62,28 @@ const IC = {
   siren: '<path d="M7 18v-6a5 5 0 0 1 10 0v6M5 21h14M12 2v2M4.2 5.2l1.4 1.4M19.8 5.2l-1.4 1.4"/>',
 };
 const ico = (n, c = "") => `<svg class="i ${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n] || ""}</svg>`;
+/* ---------- pictogramas (PIC viene de pics.js: SVG incluidos en la app) ---------- */
+const np = (n, c = "") => (PIC.noto[n] || "").replace("<svg", `<svg class="np ${c}"`);
+const GHS_NOM = { GHS01: "Explosivo", GHS02: "Inflamable", GHS03: "Comburente", GHS04: "Gas a presión", GHS05: "Corrosivo", GHS06: "Tóxico", GHS07: "Irritante o nocivo", GHS08: "Peligro grave para la salud", GHS09: "Contamina el agua" };
+const GHS_CORTO = { GHS08: "Peligro para la salud" };
+// Pictograma oficial que corresponde a cada indicación de peligro (Reglamento CLP)
+function ghsDe(codigo) {
+  const n = parseInt(String(codigo).replace(/\D/g, ""), 10);
+  if (!(n >= 200)) return null;
+  if ((n >= 200 && n <= 205) || n === 240 || n === 241) return "GHS01";
+  if ((n >= 220 && n <= 228) || n === 242 || (n >= 250 && n <= 252) || n === 260 || n === 261) return "GHS02";
+  if (n >= 270 && n <= 272) return "GHS03";
+  if (n === 280 || n === 281) return "GHS04";
+  if (n === 290 || n === 314 || n === 318) return "GHS05";
+  if (n === 300 || n === 301 || n === 310 || n === 311 || n === 330 || n === 331) return "GHS06";
+  if (n === 302 || n === 312 || n === 315 || n === 317 || n === 319 || n === 332 || n === 335 || n === 336) return "GHS07";
+  if (n === 304 || n === 334 || (n >= 340 && n <= 341) || (n >= 350 && n <= 351) || (n >= 360 && n <= 361) || (n >= 370 && n <= 373)) return "GHS08";
+  if (n === 400 || n === 410 || n === 411) return "GHS09";
+  return null;
+}
+const ghsLista = (p) => { const o = new Set(); (p.h || []).forEach((h) => { const g = ghsDe(h[0]); if (g) o.add(g); }); return [...o].sort(); };
+const ghs = (g, c = "") => `<span class="ghs ${c}" role="img" aria-label="${esc(GHS_NOM[g])}">${PIC.ghs[g] || ""}</span>`;
+const FAM_IC = { aceites: "oil-drum", grasas: "gear", combustibles: "fuel-pump", pinturas: "alembic" };
 $("#hAjustes").innerHTML = ico("sliders");
 
 /* ---------- almacenamiento local validado ---------- */
@@ -200,15 +222,15 @@ function pintarDock(modo) {
   if (modo === "ficha") {
     const r = telResponsable();
     dockEl.className = "dock dock-ficha";
-    dockEl.innerHTML = `<a class="dbtn danger" href="tel:915620420">${ico("phone")}<span><b>Toxicología</b><small>91 562 04 20</small></span></a>` +
-      (r ? `<a class="dbtn navy" href="tel:${esc(telHref(r.t))}">${ico("user")}<span><b>Responsable</b><small>${esc(CFG.nombre)}</small></span></a>`
-         : `<a class="dbtn navy" href="tel:112">${ico("siren")}<span><b>Emergencias</b><small>112</small></span></a>`);
+    dockEl.innerHTML = `<a class="dbtn danger" href="tel:915620420"><span class="cir">${np("stethoscope")}</span><span><b>Toxicología</b><small>91 562 04 20</small></span></a>` +
+      (r ? `<a class="dbtn navy" href="tel:${esc(telHref(r.t))}"><span class="cir">${np("construction-worker", "m-hat")}</span><span><b>Responsable</b><small>${esc(CFG.nombre)}</small></span></a>`
+         : `<a class="dbtn navy" href="tel:112"><span class="cir">${np("police-car-light", "m-sir")}</span><span><b>Emergencias</b><small>112</small></span></a>`);
     return;
   }
   if (modo === "busqueda") {
     dockEl.className = "dock dock-busca";
     dockEl.innerHTML = `<label class="busca">${ico("search")}<input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="80" placeholder="Buscar producto…" aria-label="Buscar producto"><button id="borrar" type="button" aria-label="Borrar búsqueda" hidden>${ico("x")}</button></label>` +
-      `<a class="sosb" href="#/sos" aria-label="Emergencia: a quién llamar">${ico("siren")}SOS</a>`;
+      `<a class="sosb" href="#/sos" aria-label="Emergencia: a quién llamar"><span class="m-sir">${ico("siren")}</span>SOS</a>`;
     return;
   }
   dockEl.className = "dock"; dockEl.innerHTML = "";
@@ -222,7 +244,8 @@ function enfocar() { vista.focus({ preventScroll: true }); window.scrollTo(0, 0)
 const nivelEf = (p) => (p.sinFDS ? 1 : p.nivel);
 const NIVEL_TXT = ["Sin clasificación de peligro", "Atención", "Peligro"];
 const NIVEL_ICO = ["check", "warn", "flame"];
-const GRUPO_ICO = { aceites: "drop", grasas: "cog", combustibles: "flame", pinturas: "spray", peligro: "warn", sinfds: "file" };
+const GRUPO_ICO = { aceites: "oil-drum", grasas: "gear", combustibles: "fuel-pump", pinturas: "alembic", peligro: "warning", sinfds: "page-facing-up" };
+const GRUPO_ANIM = { grasas: "m-gear", peligro: "m-warn" };
 const GRUPO_NOM = { peligro: "Peligrosos", sinfds: "Sin ficha" };
 const nombreGrupo = (id) => GRUPO_NOM[id] || (GRUPOS.find((g) => g.id === id) || { n: "Productos" }).n;
 const cuenta = (g) => PRODUCTOS.filter((p) => pasaGrupo(p, g)).length;
@@ -243,7 +266,7 @@ function pintarInicio() {
   const ids = [...GRUPOS.map((g) => g.id).filter((id) => id !== "todos"), "peligro", "sinfds"];
   const rec = cargarRec().map((id) => PRODUCTOS.find((p) => p.id === id));
   vista.innerHTML = `${pendiente}
-    <div class="tiles">${ids.map((id) => `<button class="mos g-${esc(id)}" type="button" data-g="${esc(id)}"><span class="ic">${ico(GRUPO_ICO[id] || "layers")}</span><span><b>${esc(nombreGrupo(id))}</b><small>${cuenta(id)} ficha${cuenta(id) === 1 ? "" : "s"}</small></span></button>`).join("")}</div>
+    <div class="tiles">${ids.map((id) => `<button class="mos g-${esc(id)}" type="button" data-g="${esc(id)}"><span class="ic">${GRUPO_ICO[id] ? np(GRUPO_ICO[id], GRUPO_ANIM[id] || "") : ico("layers")}</span><span><b>${esc(nombreGrupo(id))}</b><small>${cuenta(id)} ficha${cuenta(id) === 1 ? "" : "s"}</small></span></button>`).join("")}</div>
     <button class="btn ghost todos" id="verTodos" type="button">${ico("list")}Ver los ${PRODUCTOS.length} productos</button>
     ${rec.length ? `<h3 class="sec-t">Consultados hace poco</h3><ul class="lista">${rec.map((p) => filaProducto(p)).join("")}</ul>` : ""}
     <p class="ayuda">Escribe abajo 2 o 3 letras, o busca por <b>viscosidad</b> (15w40), <b>nº ONU</b> (1202), <b>CAS</b>, <b>fabricante</b> o <b>peligro</b> (inflamable, H304).</p>
@@ -252,10 +275,14 @@ function pintarInicio() {
   $("#verTodos").onclick = () => { estado.todos = true; pintarInicio(); window.scrollTo(0, 0); };
 }
 function filaProducto(p) {
-  const e = estadoFicha(p);
+  const e = estadoFicha(p), g = ghsLista(p), niv = nivelEf(p);
+  const lv = p.sinFDS ? "Sin FDS" : ["Sin clasificar", "Atención", "Peligro"][p.nivel];
+  const pics = g.length ? g.map((x) => ghs(x, "mini")).join("") : `<small class="sinp">${p.sinFDS ? "Sin ficha de seguridad" : "Sin pictogramas de peligro"}</small>`;
+  const rev = !p.sinFDS && (e.cls === "old" || e.cls === "warn") ? `<small class="rev">Ficha ${esc(e.txt)}</small>` : "";
   return `<li><a class="card" href="#/p/${esc(p.id)}">
-    <span class="tile n${nivelEf(p)}" title="${p.sinFDS ? "Sin ficha de seguridad" : NIVEL_TXT[p.nivel]}">${ico(NIVEL_ICO[nivelEf(p)])}</span>
-    <span class="cuerpo"><b>${esc(p.nombre)}</b><small>${esc(p.tipo)} · ${esc(p.fabricante)}</small><span class="badge ${e.cls}">${esc(e.txt)}</span></span>${ico("chev", "chev")}</a></li>`;
+    <span class="tile f-${esc(p.familia)}">${np(FAM_IC[p.familia] || "page-facing-up")}</span>
+    <span class="cuerpo"><b>${esc(p.nombre)}</b><small>${esc(p.tipo)} · ${esc(p.fabricante)}</small><span class="pics">${pics}</span></span>
+    <span class="lado"><span class="lv n${niv}">${lv}</span>${rev}${ico("chev", "chev")}</span></a></li>`;
 }
 function pintarResultados() {
   const r = buscar(estado.q, estado.grupo);
@@ -281,17 +308,17 @@ function vistaFicha(id) {
   document.title = p.nombre + " · Fichas";
   pintarDock("ficha");
   guardarRec(p.id);
-  const e = estadoFicha(p), a = p.auxilios;
+  const e = estadoFicha(p), a = p.auxilios, gh = ghsLista(p);
   const viejo = e.cls === "old" || e.cls === "warn";
   const avisos = [];
   if (p.sinFDS) avisos.push(`<div class="aviso bad">${ico("warn")}<div><b>No hay ficha de seguridad utilizable.</b> ${esc(p.peligro)}</div></div>`);
   if (viejo && !p.sinFDS) avisos.push(`<div class="aviso old">${ico("info")}<div><b>Ficha de ${fechaTxt(p.fecha)}.</b> Puede estar desactualizada: pide la FDS vigente al proveedor.</div></div>`);
   const tel = p.tel.filter((t) => t.t !== "915620420" && t.t !== "112");
   const ingClave = /NO provocar|NUNCA provocar|urgencia/i.test(a.ingestion);
-  const acc = (icon, t, txt, clave = false) => `<div class="acc ${clave ? "clave" : ""}"><span class="ic">${ico(icon)}</span><div><h4>${t}</h4><p>${esc(txt)}</p></div></div>`;
+  const acc = (icon, t, txt, clave = false) => `<div class="acc ${clave ? "clave" : ""} a-${icon}"><span class="ic">${np(icon)}</span><div><h4>${t}</h4><p>${esc(txt)}</p></div></div>`;
   const TABS = [["acc", "Accidente"], ["fuego", "Fuego y derrame"], ["datos", "Datos"]];
   const contenido = {
-    acc: () => `${acc("cup", "Si lo tragas", a.ingestion, ingClave)}${acc("drop", "Si cae en la piel", a.piel)}${acc("eye", "Si cae en los ojos", a.ojos)}${acc("wind", "Si lo respiras", a.inhalacion)}
+    acc: () => `${acc("mouth", "Si lo tragas", a.ingestion, ingClave)}${acc("raised-hand", "Si cae en la piel", a.piel)}${acc("eye", "Si cae en los ojos", a.ojos)}${acc("lungs", "Si lo respiras", a.inhalacion)}
       <div class="llamar sec-llamar">${llamar({ n: "Emergencias", t: "112", show: "112" })}${tel.map((t) => llamar(t)).join("")}</div>`,
     fuego: () => `${p.fuego ? bloque("flame", "Incendio", `<p><b class="si">Usar:</b> ${esc(p.fuego.usar)}</p>${p.fuego.no && p.fuego.no !== "—" ? `<p><b class="no">No usar:</b> ${esc(p.fuego.no)}</p>` : ""}${p.fuego.nota ? `<p>${esc(p.fuego.nota)}</p>` : ""}`) : ""}
       ${bloque("drop", "Derrame", `<p>${esc(p.derrame)}</p>`)}
@@ -309,9 +336,15 @@ function vistaFicha(id) {
   <article class="ficha">
     ${volverBtn("Productos")}
     <div class="cab">
-      <span class="tipo">${esc(p.tipo)} · ${esc(p.fabricante)}</span>
-      <h2>${esc(p.nombre)}</h2>
-      <span class="nivel n${nivelEf(p)}">${ico(NIVEL_ICO[nivelEf(p)])}${p.sinFDS ? "Sin FDS" : ["Sin clasificar", "Atención", "Peligro"][p.nivel]}</span>
+      <div class="cab-top">
+        <span class="tile grande f-${esc(p.familia)}">${np(FAM_IC[p.familia] || "page-facing-up")}</span>
+        <div class="cab-t">
+          <span class="tipo">${esc(p.tipo)} · ${esc(p.fabricante)}</span>
+          <h2>${esc(p.nombre)}</h2>
+          <span class="nivel n${nivelEf(p)}">${ico(NIVEL_ICO[nivelEf(p)])}${p.sinFDS ? "Sin FDS" : ["Sin clasificar", "Atención", "Peligro"][p.nivel]}</span>
+        </div>
+      </div>
+      ${gh.length ? `<div class="ghs-fila">${gh.map((g) => `<div class="ghs-it">${ghs(g, "grande")}<span>${esc(GHS_CORTO[g] || GHS_NOM[g])}</span></div>`).join("")}</div>` : ""}
       ${!p.sinFDS ? `<div class="riesgo n${p.nivel}"><b>Qué riesgo tiene</b><p class="clamp" id="rp">${esc(p.peligro)}</p><button class="mas" id="mas" type="button" aria-expanded="false" hidden>Leer todo</button></div>` : ""}
     </div>
     ${avisos.join("")}
@@ -340,9 +373,11 @@ function vistaFicha(id) {
 }
 
 /* ---------- vista: emergencia ---------- */
-function cuadro(t, cls = "", wide = false) {
-  return `<a class="sq ${cls} ${wide ? "wide" : ""}" href="tel:${esc(telHref(t.t))}">${ico("phone")}<span><small>${esc(t.n)}</small><b>${esc(t.show || t.t)}</b></span></a>`;
+function cuadro(t, cls = "", wide = false, icono = "") {
+  const ic = icono ? np(icono, icono === "police-car-light" ? "m-sir" : "") : ico("phone");
+  return `<a class="sq ${cls} ${wide ? "wide" : ""}" href="tel:${esc(telHref(t.t))}"><span class="cir">${ic}</span><span class="sq-t"><small>${esc(t.n)}</small><b>${esc(t.show || t.t)}</b></span></a>`;
 }
+const iconoTel = (n) => (/mutua|hospital|ambulancia|m[eé]dic|urgenc/i.test(n) ? "hospital" : /coordinador|jefe|encargado|recurso|seguridad|prevenci/i.test(n) ? "safety-vest" : "");
 function vistaSos() {
   document.title = "Emergencia · Fichas";
   pintarDock("nada");
@@ -351,10 +386,10 @@ function vistaSos() {
     ${volverBtn()}
     <h2 class="h2 rojo">Emergencia</h2>
     <div class="sq-grid">
-      ${cuadro({ n: "Emergencias", t: "112", show: "112" }, "rojo", true)}
-      ${cuadro({ n: "Toxicología · 24 h", t: "915620420", show: "91 562 04 20" }, "azul", true)}
-      ${r ? cuadro({ n: `Responsable · ${CFG.nombre}`, t: r.t, show: r.show }, "negro", true) : `<a class="aviso-cfg" style="grid-column:1/-1;margin:0" href="#/ajustes">${ico("user")}<span><b>Sin responsable configurado.</b> Añádelo en Ajustes para tenerlo aquí a un toque.</span></a>`}
-      ${extra.map((t) => cuadro({ n: t.n, t: t.t, show: t.t })).join("")}
+      ${cuadro({ n: "Emergencias", t: "112", show: "112" }, "rojo", true, "police-car-light")}
+      ${cuadro({ n: "Toxicología · 24 h", t: "915620420", show: "91 562 04 20" }, "azul", true, "stethoscope")}
+      ${r ? cuadro({ n: `Responsable · ${CFG.nombre}`, t: r.t, show: r.show }, "negro", true, "construction-worker") : `<a class="aviso-cfg" style="grid-column:1/-1;margin:0" href="#/ajustes">${ico("user")}<span><b>Sin responsable configurado.</b> Añádelo en Ajustes para tenerlo aquí a un toque.</span></a>`}
+      ${extra.map((t) => cuadro({ n: t.n, t: t.t, show: t.t }, "blanco", false, iconoTel(t.n))).join("")}
     </div>
     <h3 class="sec-t">Mientras llega la ayuda</h3>
     <ol class="pasos">
