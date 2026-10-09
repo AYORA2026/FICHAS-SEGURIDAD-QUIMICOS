@@ -8,12 +8,12 @@ Sin hallazgos críticos abiertos. Lo que se encontró se corrigió; lo que no se
 
 | # | Hallazgo | Riesgo | Estado |
 |---|---|---|---|
-| 1 | Sin Content-Security-Policy | Medio | Corregido: CSP estricta (`default-src 'none'`, scripts/estilos solo `'self'`, sin `unsafe-inline`, `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`, `frame-src 'none'`). Probado: un script inline inyectado se bloquea. |
+| 1 | Sin Content-Security-Policy | Medio | Corregido: CSP estricta (`default-src 'none'`, scripts/estilos solo `'self'`, sin `unsafe-inline`, `object-src 'none'`, `base-uri 'none'`, `form-action 'none'`, `frame-src 'none'`; desde la v1.3 añade `font-src 'self'` para la tipografía incluida). Probado: un script inline inyectado se bloquea. |
 | 2 | Entradas del usuario (proyecto, responsable, teléfonos) mostradas con `innerHTML` | Medio | Corregido: escape de todo dato dinámico, validación con lista blanca (letras, números y puntuación básica), longitud máxima, rechazo explícito de `< >` y caracteres de control, revalidación al leer de `localStorage`. |
 | 3 | Enlaces `tel:` construidos con texto libre | Bajo | Corregido: solo dígitos y `+` (y validación de 6-15 dígitos). |
 | 4 | Ruteo por `location.hash` | Bajo | Corregido: identificador por lista blanca `[a-z0-9-]`, búsqueda en el catálogo (sin `__proto__`), sin `decodeURIComponent` sin control. |
 | 5 | Service worker: caché obsoleta / envenenamiento | Medio | Corregido: caché versionada; precarga con `cache: "reload"` (evita copias viejas de la caché HTTP de GitHub Pages); solo GET del mismo origen; nunca intercepta peticiones externas; la actualización la decide el usuario. |
-| 6 | Manipulación o corrupción de las fichas | Medio | Mitigado: `integrity.json` con SHA-256 de los 34 archivos + botón “Verificar integridad”. Limitación: detecta corrupción y cambios parciales, no un repositorio comprometido (ver riesgos residuales). |
+| 6 | Manipulación o corrupción de las fichas | Medio | Mitigado: `integrity.json` con SHA-256 de los 35 archivos + botón “Verificar integridad”. Limitación: detecta corrupción y cambios parciales, no un repositorio comprometido (ver riesgos residuales). |
 | 7 | Fuga por `Referer` / `window.opener` | Bajo | Corregido: `referrer: no-referrer`, enlaces `rel="noopener noreferrer"`. |
 | 8 | Recursos de terceros | — | Ninguno: cero CDN, fuentes, analítica, cookies ni peticiones externas (verificado por análisis del código). |
 | 9 | PDF con contenido activo | Info | Los 25 PDF analizados (estructura completa, incluidos flujos comprimidos): sin JavaScript, sin `Launch`, sin `SubmitForm`, sin ficheros incrustados. Solo enlaces `URI` normales de los fabricantes (algunos `http://`: quick-fds.com, cefic.org, echa.europa.eu, eur-lex.europa.eu) y `mailto:`. |
@@ -38,5 +38,10 @@ Sin hallazgos críticos abiertos. Lo que se encontró se corrigió; lo que no se
 
 ## Comprobaciones realizadas
 - Análisis estático: sin `eval`, `Function`, `document.write`, manejadores `on*` en línea ni URL `javascript:`; 12 usos de `innerHTML`, todos con datos escapados o estáticos.
-- Pruebas automáticas: inyección `<img onerror>` en formularios (rechazada), hash manipulados (`__proto__`, `../`, `<script>`), script inline (bloqueado por CSP), modo sin conexión (app y PDF), verificación de integridad (34/34), actualización de versión sin perder la configuración.
+- Pruebas automáticas: inyección `<img onerror>` en formularios (rechazada), hash manipulados (`__proto__`, `../`, `<script>`), script inline (bloqueado por CSP), modo sin conexión (app y PDF), verificación de integridad (35/35), actualización de versión sin perder la configuración.
 - Consola del navegador sin errores ni avisos de CSP.
+
+## Cambios de la v1.3.0 (rediseño «Mosaico»)
+- Tipografía Lexend (licencia SIL OFL) incluida en `fonts/`: ningún recurso externo, se verifica con el resto de archivos.
+- Nueva clave local `fds.v1.rec` (últimos 5 productos consultados, solo ids válidos). Se borra con «Borrar mis datos de este móvil».
+- Botón de compartir por WhatsApp (v1.2.0): solo envía el enlace de la app y el nombre del proyecto; no incluye nombre ni teléfono del responsable.
